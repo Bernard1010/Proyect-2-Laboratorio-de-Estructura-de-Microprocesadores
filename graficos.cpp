@@ -1,6 +1,8 @@
 #include <allegro.h>
 #include <unistd.h>
 
+#define MAXFILAS 20
+#define MAXCOLS 31
 
 
 BITMAP *buffer;								//buffer de almacenamiento de todos los sprites
@@ -22,31 +24,31 @@ BITMAP *borde;
 BITMAP *trueno;								//variable para guardar imagen de animacion del trueno
 
 
-int sizescreen_x=700;						//tamano horizontal de la ventana de juego
-int sizescreen_y=1000;						//Tamano vertical de la ventana de juego
+int sizescreen_x=548;						//tamano horizontal de la ventana de juego
+int sizescreen_y=650;						//Tamano vertical de la ventana de juego
 
 int mh=0;									//variable para control de movimiento horizontal de la bola
 int mv=1;									//variable de control de movimiento vertical de la bola
-int bpx=650;								//Variable de posicion de en x de la bola
-int bpy=650;								//Variable de posicion de en y de la bola
+int bpx=239;								//Variable de posicion de en x de la bola
+int bpy=555+12+7;								//Variable de posicion de en y de la bola
 
 int vbola=2;								//velocidad de la bola [pixeles/cilo]
 int vbarra=3;								//velocidad de la barra [pixeles/cilo]
 
 
 int dir=0;						
-int px=350,py=800;							//Variable de posicion de la barra
+int px=225,py=553;							//Variable de posicion de la barra
 
 
 
 int tr=1;									//Variable de animacion del trueno
 int postrx=1;								//Posicion horizontal trueno
-int postry=850;								//Posicion vertical trueno
-int holdtr=0;								//Cuenta de animacion del trueno
+int postry=570;								//Posicion vertical trueno
+int holdtr=0;								//Cuenta de animacion del trueno`
 int veltr=40;								//Variable de velocidad de animacion del trueno
 
-//char matrizbloques [21][14];
-char matrizbloquesombrilla [21][14]={
+char matrizbloques [21][14];
+char bloquesombrilla [21][14]={
 	"      D      ",
 	"     EEE     ",
 	"    CCACC    ",
@@ -71,9 +73,33 @@ char matrizbloquesombrilla [21][14]={
 };
 
 
+char bloquescolumnas [21][14]={
+	"             ",
+	"             ",
+	"     E    E  ",
+	" E   E E  EE ",
+	" E E E EE EE ",
+	"EEEEEEEEEEEEE",
+	"DDDDDDDDDDDDD",
+	" DDDDDDDDDDD ",
+	" DDDEDDDEDDD ",
+	" DDEDEDEDEDD ",
+	" DDEDDEDDEDD ",
+	" DDEDDDDDEDD ",
+	" DDEDDDDDEDD ",
+	" DDDDDDDDDDD ",
+	" DDDDDDDDDDD ",
+	" DDDDDDDDDDD ",
+	"             ",
+	"             ",
+	"             ",
+	" DDDDDDDDDDD ",
+	
+};
 
 
-char matrizbloques [21][14]={
+
+char bloquesdefecto [21][14]={
 	"             ",
 	"             ",
 	"             ",
@@ -141,32 +167,32 @@ void initmatriz()
 	
 }
 
-void imprimirbloques()
+void imprimirbloques(char matriz[21][14])
 {
 	for(int i=0;i<20;i++)
 		{
 			for(int j=0;j<14;j++)
 			{
-				if(matrizbloques[i][j]=='A')
+				if(matriz[i][j]=='A')
 					{
-						draw_sprite(buffer,bloque0,j*50+25,i*22+36);	
+						draw_sprite(buffer,bloque0,j*39+22,i*16+23);	
 					}
 					
-				if(matrizbloques[i][j]=='B')
+				if(matriz[i][j]=='B')
 					{
-						draw_sprite(buffer,bloque1,j*50+25,i*22+36);	
+						draw_sprite(buffer,bloque1,j*39+22,i*16+23);	
 					}
-				if(matrizbloques[i][j]=='C')
+				if(matriz[i][j]=='C')
 					{
-						draw_sprite(buffer,bloque2,j*50+25,i*22+36);	
+						draw_sprite(buffer,bloque2,j*39+22,i*16+23);	
 					}
-				if(matrizbloques[i][j]=='D')
+				if(matriz[i][j]=='D')
 					{
-						draw_sprite(buffer,bloque3,j*50+25,i*22+36);	
+						draw_sprite(buffer,bloque3,j*39+22,i*16+23);	
 					}
-				if(matrizbloques[i][j]=='E')
+				if(matriz[i][j]=='E')
 					{
-						draw_sprite(buffer,bloque4,j*50+25,i*22+36);	
+						draw_sprite(buffer,bloque4,j*39+22,i*16+23);	
 					}
 			
 			
@@ -225,13 +251,13 @@ void movimientobola()
 	
 		if(mv==1)//Si mv es igual a 1, la bola se mueve hacia arriba
 		{
-			if(bpy-2<=30) mv=0;	
+			if(bpy-2<=24) mv=0;	
 			else bpy-=vbola;
 		}
 	
 		if(mv==0)//Si mv es igual a 0, la bola se mueve hacia abajo
 		{
-			if(bpy>=845)
+			if(bpy>=postry-7)
 			{
 				mv=1;
 			}
@@ -264,13 +290,13 @@ void movbarra()//Funcion de movimiento e impresion de la barra
 	
 	if(key[KEY_LEFT])
              {
-				 if(!(px-2<=26))				 
+				 if(!(px-2<=20))				 
 				  px=px-vbarra;
 				 
 			 }
 			  if(key[KEY_RIGHT])
              {
-				 if(!(px+71>=sizescreen_x-26))
+				 if(!(px+71>=sizescreen_x-5))
 				 px=px+vbarra;
 				 
 			 }
@@ -322,7 +348,7 @@ void animtrueno()//Funcion de animacion del trueno (piso)
 }	
 
 
-void comparabloques()
+void comparabloques(char matriz[21][14])
 {
 	
 	for(int i=0;i<20;i++)
@@ -332,24 +358,24 @@ void comparabloques()
 					
 					if(mv==0)
 					{
-						if(bpy+14>=36+22*i && bpy<=36+2+22*i && bpx>=24+50*j && bpx+14<+26+50*j+50)
+						if(bpy+14>=23+16*i && bpy<=23+2+16*i && bpx>=18+39*j && bpx+14<+22+39*j+39)
 						{
-							if(matrizbloques[i][j]!=' ')
+							if(matriz[i][j]!=' ')
 							{
 								mv=1;
-								matrizbloques[i][j]=' ';
+								matriz[i][j]=' ';
 							}
 					
 						}
 				    }		
 					if(mv==1)
 					{
-						if(bpy<=36+22+22*i && bpy>=36+20+22*i && bpx+14>=24+50*j && bpx<=26+50*j+50)
+						if(bpy<=23+16+16*i && bpy>=23+14+16*i && bpx+14>=18+39*j && bpx<=22+39*j+39)
 						{
-							if(matrizbloques[i][j]!=' ')
+							if(matriz[i][j]!=' ')
 							{
 								mv=0;
-								matrizbloques[i][j]=' ';
+								matriz[i][j]=' ';
 							}
 					
 						}
@@ -358,24 +384,24 @@ void comparabloques()
 			//////////////////////////////////////////////////
 					if(mh==0)
 					{
-						if(bpy+14>=36+22*i && bpy<=36+22*i+22 && bpx<=25+50*j+50 && bpx>=25+50*j-1)
+						if(bpy+14>=23+16*i && bpy<=23+16*i+16 && bpx<=18+39*j+39 && bpx>=18+39*j-1)
 						{
-							if(matrizbloques[i][j]!=' ')
+							if(matriz[i][j]!=' ')
 							{
 								mh=1;
-								matrizbloques[i][j]=' ';
+								matriz[i][j]=' ';
 							}
 					
 						}
 				    }		
 					 if(mh==1)
 					{
-						if(bpy+14>=36+22*i && bpy<=36+22*i+22 && bpx+14>=25+50*j && bpx+14<=25+50*j+1)
+						if(bpy+14>=23+16*i && bpy<=23+16*i+16 && bpx+14>=18+39*j && bpx+14<=18+39*j+1)
 						{
-							if(matrizbloques[i][j]!=' ')
+							if(matriz[i][j]!=' ')
 							{
 								mh=0;
-								matrizbloques[i][j]=' ';
+								matriz[i][j]=' ';
 							}
 					
 						}
@@ -390,8 +416,8 @@ void comparabloques()
 	
 }
 
-/*
-void cargarmatrizbloques(char matriz_in,char matriz_out)
+
+void cargar(char matriz_in[21][14],char matriz_out[21][14])
 {
 	
 	for(int i=0;i<20;i++)
@@ -404,7 +430,7 @@ void cargarmatrizbloques(char matriz_in,char matriz_out)
 
 		}
 	
-}*/
+}
 
 
 
@@ -423,21 +449,22 @@ int main()
         bloque0 = load_bitmap("bloque0.bmp",NULL);
         bloque1 = load_bitmap("bloque1.bmp",NULL);
         bloque2 = load_bitmap("bloque2.bmp",NULL);
-        bloque3 = load_bitmap("bloque3.bmp",NULL);
-        bloque4 = load_bitmap("bloque4.bmp",NULL);
+        bloque3 = load_bitmap("bloque4.bmp",NULL);
+        bloque4 = load_bitmap("bloque3.bmp",NULL);
         trueno = load_bitmap("trueno1.bmp",NULL);
         
        
 		//initmatriz();
+		cargar(bloquesdefecto,matrizbloques);
         
         while(!key[KEY_ESC])
         {
              
               
              
-             draw_sprite(buffer,fondo,0,0); 
-             comparabloques();
-             imprimirbloques();
+             draw_sprite(buffer,fondo,-10,0); 
+             comparabloques(matrizbloques);
+             imprimirbloques(matrizbloques);
              
              
              animtrueno();
@@ -447,7 +474,7 @@ int main()
              
              
              pantalla();
-             //retraso();
+             usleep(4000);
              clear(buffer);
                                        
              
