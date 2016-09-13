@@ -1,9 +1,14 @@
 #include <allegro.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <wiringPi.h>
+#include <softTone.h>
 
 #define MAXFILAS 20
 #define MAXCOLS 31
-
+#define	PIN	18
 
 BITMAP *buffer;								//buffer de almacenamiento de todos los sprites
 
@@ -155,6 +160,16 @@ char bloquesdefecto [21][14]={
 
 
 ///////////////----------FUNCIONES-----------////////////////
+
+void sonido(){
+  wiringPiSetupGpio () ;
+  softToneCreate (PIN) ;
+	softToneWrite (PIN, 800) ;
+         delay (500);
+    softToneWrite (PIN, 0) ;
+         delay (500);
+}
+
 void imprimirbloques(char matriz[21][14])
 {
 	for(int i=0;i<20;i++)
