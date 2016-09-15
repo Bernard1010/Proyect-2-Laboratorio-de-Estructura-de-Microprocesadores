@@ -3,12 +3,17 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+
 #include <wiringPi.h>
 #include <softTone.h>
-
+#define led1 22
+#define led2 27
 #define MAXFILAS 20
 #define MAXCOLS 31
 #define	PIN	18
+#define	BUTTON	17
+SAMPLE    *musica;
+
 
 BITMAP *buffer;								//buffer de almacenamiento de todos los sprites
 
@@ -157,19 +162,30 @@ char bloquesdefecto [21][14]={
 	
 };
 
-
-
-///////////////----------FUNCIONES-----------////////////////
-
 void sonido(){
-  wiringPiSetupGpio () ;
+  
   softToneCreate (PIN) ;
-	softToneWrite (PIN, 800) ;
-         delay (500);
-    softToneWrite (PIN, 0) ;
-         delay (500);
+	 softToneWrite (PIN, 800) ;
+	 digitalWrite(led1,HIGH);
+          delay (50);
+     digitalWrite (led1,LOW);
+         softToneWrite (PIN, 0) ;
+         
+         //delay (500);
 }
 
+void sonido2(){
+  
+  softToneCreate (PIN) ;
+	 softToneWrite (PIN, 1500) ;
+	 digitalWrite(led2,HIGH);
+          delay (50);
+     digitalWrite (led2,LOW);    
+         softToneWrite (PIN, 0) ;
+         //delay (500);
+}
+
+///////////////----------FUNCIONES-----------////////////////
 void imprimirbloques(char matriz[21][14])
 {
 	for(int i=0;i<20;i++)
@@ -214,8 +230,8 @@ void pantalla()
 
 void retraso()
 {
-		if (vbolax==2) usleep(7000);
-		else usleep(6500);
+		//if (vbolax==2) usleep(7000);
+		//else usleep(6500);
 		
 	
 }
@@ -262,21 +278,25 @@ void movimientobola()
 				mv=1;
 				mh=0;
 				vbolax=2;
+				sonido2();
 			}
 			else if((bpy+10 >=py && bpy+13 <= py+5) && (bpx+14>=px+9 && bpx <= px+18))
 			{
 				mv=1;
 				vbolax=2;
+				sonido2();
 			}
 			else if((bpy+10 >=py && bpy+13 <= py+5) && (bpx+14>=px+18 && bpx <= px+36))
 			{
 				mv=1;
 				vbolax=1;
+				sonido2();
 			}
 			else if((bpy+10 >=py && bpy+13 <= py+5) && (bpx+14>=px+36 && bpx <= px+45))
 			{
 				mv=1;
 				vbolax=2;
+				sonido2();
 				
 			}
 			else if((bpy+10 >=py && bpy+13 <= py+5) && (bpx+14>=px+45 && bpx <= px+55))
@@ -284,6 +304,7 @@ void movimientobola()
 				mv=1;
 				mh=1;
 				vbolax=2;
+				sonido2();
 			}
 						
 			else bpy+=vbolay;
@@ -637,7 +658,7 @@ void reiniciodevariables()
 		vidas--;							//Reduccion de vida
 		px=250;								//Posicion inicial barra
 		bpx=264;							//Regresa la bola a su posicion inicial 								
-		bpy=100;						//""555-12-7
+		bpy=555-12-7;						//""555-12-7
 		ciclomuerte=0;						//Reinicia condicion de variables del ciclo de juego
 		mv = 1;								//""
 		mh = rand() % 2;;						//""
@@ -662,6 +683,7 @@ void comparabloques(char matriz[21][14])
 							{
 								mv=1;
 								matriz[i][j]=' ';
+								sonido();
 							}
 					
 						}
@@ -674,6 +696,7 @@ void comparabloques(char matriz[21][14])
 							{
 								mv=0;
 								matriz[i][j]=' ';
+								sonido();
 							}
 					
 						}
@@ -688,6 +711,7 @@ void comparabloques(char matriz[21][14])
 							{
 								mh=1;
 								matriz[i][j]=' ';
+								sonido();
 							}
 					
 						}
@@ -700,6 +724,7 @@ void comparabloques(char matriz[21][14])
 							{
 								mh=0;
 								matriz[i][j]=' ';
+								sonido();
 							}
 					
 						}
@@ -737,6 +762,7 @@ void teclado_in(char nombre[20])
 	
 	while(true)
 	{
+		usleep(100000);
 		char tecla= readkey() >> 8;
 		if(tecla==KEY_ENTER){
 			break;
@@ -977,10 +1003,13 @@ void screen_inicio()
 }
 
 
+
+
+
 void cargasprites()
 {
 		buffer=create_bitmap(sizescreen_x,sizescreen_y);	//Creacion de espacio de juego
-        fondo = load_bitmap("fondo.bmp",NULL);				//^
+        fondo = load_bitmap("fondoA.bmp",NULL);				//^
         borde = load_bitmap("borde.bmp",NULL);				//^
         barra = load_bitmap("barra.bmp",NULL);				//^
         bola = load_bitmap("BolaR.bmp",NULL);				//^
@@ -1017,11 +1046,21 @@ void cargasprites()
 
 int main() 
 {
-		
+		wiringPiSetupGpio () ;
+		pinMode (BUTTON, INPUT) ;
+		pinMode (led1,OUTPUT);
+		pinMode (led2,OUTPUT);
+                         
+	
+ 
 		init_allegro();
-		cargasprites();     
+		if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) { allegro_message("Error: inicializando sistema de sonido\n%s\n", allegro_error); return 1; }
+                set_volume(70, 70);
+                musica = load_wav("Avicii & Nicky Romero - Nicktim (Original Mix).wav");
+		cargasprites();
+		reinicio:  
+		play_sample(musica,2000,100,1000,0);    
 		draw_sprite(screen,fondo,0,0);
-		
 		cargarmatriz(bloquesdefecto,matrizbloques);
 		screen_inicio();
 		teclado_in(nombre_jugador);
@@ -1035,8 +1074,15 @@ int main()
 		 
 		 while (!key[KEY_X])	//////////////////////////////////////////////////////////////////////Pausa entre vidas
 		 {
-			 iniciojuego(); 						//Funcion que controla el movimiento antes de que inicie la partida
-			 
+			 iniciojuego(); 
+			 usleep(100000);						//Funcion que controla el movimiento antes de que inicie la partida
+			  if (digitalRead (BUTTON) == HIGH)	// Swap LED states
+				{ 	vidas=3;
+					goto reinicio;
+					
+				}
+				
+				
 		 }
 		 
         while(!key[KEY_ESC] && ciclomuerte==0  && victoria==0) ////////////////////////////////////////////Ciclo de juego
@@ -1049,7 +1095,11 @@ int main()
              
 			 pausa_y_rastreo();
 			 
-			 
+			  if (digitalRead (BUTTON) == HIGH)	// Swap LED states
+				{ vidas=3;
+					goto reinicio;
+					
+				}
              draw_sprite(buffer,fondo,0,0); 		//Se dibuja la imagen de fondo en el buffer
              comparabloques(matrizbloques);			//Funcion de verificacion de choques
              
@@ -1065,7 +1115,7 @@ int main()
              textout_ex(buffer,font, nombre_jugador, 365, 620, makecol(0,255,0), -1);
              pantalla();							//Actualiza la pantalla con el contenido del buffer
              
-             retraso();
+             //retraso();
              
              
              clear(buffer);							//Se limpia los contenidos del buffer
@@ -1084,6 +1134,7 @@ int main()
 		
 		while(victoria==1)
 		{
+			usleep(100000);
 			draw_sprite(buffer,fondo,0,0); 							//Se dibuja la imagen de fondo en el buffer
 			draw_sprite(buffer,felicidades,40,100); 					//Se dibuja la imagen de fondo en el buffer
 			textout_ex(buffer,font, "Bernardo Rodriguez 201315419  ", 0, 200, makecol(0,255,0), -1);
@@ -1125,7 +1176,7 @@ int main()
 		
 		while(vidas ==0 && victoria!=1)
 		{
-			
+			usleep(100000);
 			draw_sprite(buffer,fondo,0,0); 		//Se dibuja la imagen de fondo en el buffer
 			draw_sprite(buffer,gameover,0,100); 		//Se dibuja la imagen de fondo en el buffer
 			textout_ex(buffer,font, "Bernardo Rodriguez 201315419  ", 0, 200, makecol(0,255,0), -1);
