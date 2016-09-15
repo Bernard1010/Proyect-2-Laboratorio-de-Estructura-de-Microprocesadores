@@ -13,6 +13,7 @@
 #define	PIN	18
 #define	BUTTON	17
 SAMPLE    *musica;
+SAMPLE    *musica2;
 
 
 BITMAP *buffer;								//buffer de almacenamiento de todos los sprites
@@ -393,6 +394,7 @@ void animmuerte()
 {
 	while (s<21)
 	{
+		//play_sample(musica2,100,100,1000,0);
 		draw_sprite(buffer,fondo,0,0); 		//Se dibuja la imagen de fondo en el buffer
 		blit(smuerteBMP,smuerte,20*s,0,0,0,20,20);			//Corte de BMP para imprimir seccion especifica
 		draw_sprite(buffer,smuerte,bpx,bpy-5);					//Carga de corte del BMP
@@ -406,7 +408,8 @@ void animmuerte()
 		usleep(100000);						//Ciclo de retraso (se debe cambiar el valor dependiendo del hardware)
 		clear(buffer);
 		s++;
-		
+		play_sample(musica2,100,100,1000,0);
+		play_sample(musica,500,100,1000,0);
 	}
 	ciclomuerte=0;	
 	s=0;
@@ -1057,9 +1060,10 @@ int main()
 		if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) { allegro_message("Error: inicializando sistema de sonido\n%s\n", allegro_error); return 1; }
                 set_volume(70, 70);
                 musica = load_wav("Avicii & Nicky Romero - Nicktim (Original Mix).wav");
-		cargasprites();
-		reinicio:  
-		play_sample(musica,2000,100,1000,0);    
+                musica2 = load_wav("Efecto_Electricidad.wav");
+		cargasprites();  
+		play_sample(musica,500,100,1000,1);
+		reinicio:   
 		draw_sprite(screen,fondo,0,0);
 		cargarmatriz(bloquesdefecto,matrizbloques);
 		screen_inicio();
