@@ -14,6 +14,7 @@
 #define	BUTTON	17
 SAMPLE    *musica;
 SAMPLE    *musica2;
+MIDI      *musica3;
 
 
 BITMAP *buffer;								//buffer de almacenamiento de todos los sprites
@@ -114,6 +115,29 @@ char bloquesvacio [21][14]={
 	"             ",
 	"             ",
 };
+
+char bloquesalien [21][14]={
+	"             ",
+	"             ",
+	"    A   A    ",
+	"     A A     ",
+	"     A A     ",
+	"    BBBBB    ",
+	"    BBBBB    ",
+	"   BBDBDBB   ",
+	"   BBDBDBB   ",
+	"  BBBBBBBBB  ",
+	"  BBBBBBBBB  ",
+	"  B BBBBB B  ",
+	"  B C   C B  ",
+	"  B C   C B  ",
+	"     C C     ",
+	"     C C     ",
+	"             ",
+	"             ",
+	"             ",
+	"             ",
+};
 	
 char matrizbloquesombrilla [21][14]={
 	"      D      ",
@@ -162,6 +186,8 @@ char bloquesdefecto [21][14]={
 	"             ",
 	
 };
+
+
 
 void sonido(){
   
@@ -394,6 +420,7 @@ void animmuerte()
 {
 	while (s<21)
 	{
+		play_sample(musica2,1500,100,1000,0);
 		//play_sample(musica2,100,100,1000,0);
 		draw_sprite(buffer,fondo,0,0); 		//Se dibuja la imagen de fondo en el buffer
 		blit(smuerteBMP,smuerte,20*s,0,0,0,20,20);			//Corte de BMP para imprimir seccion especifica
@@ -408,8 +435,8 @@ void animmuerte()
 		usleep(100000);						//Ciclo de retraso (se debe cambiar el valor dependiendo del hardware)
 		clear(buffer);
 		s++;
-		play_sample(musica2,100,100,1000,0);
-		play_sample(musica,500,100,1000,0);
+		//play_sample(musica2,500,100,1000,0);
+		play_sample(musica,800,100,1000,0);
 	}
 	ciclomuerte=0;	
 	s=0;
@@ -614,20 +641,28 @@ void iniciojuego()
 	
 	if(nfondo==0)
 	{
-		fondo = load_bitmap("fondo.bmp",NULL);				//^
+		fondo = load_bitmap("fondoA.bmp",NULL);				//^
+		//musica = load_wav("Dark_Oscillators.wav");
+		
 	}
 	
 	else if(nfondo==1)
 	{
-		fondo = load_bitmap("fondoA.bmp",NULL);				//^
+		fondo = load_bitmap("fondo.bmp",NULL);				//^
+		//musica = load_wav("Avicii & Nicky Romero - Nicktim (Original Mix).wav");
+		
 	}
 	else if(nfondo==2)
 	{
 		fondo = load_bitmap("fondoR.bmp",NULL);				//^
+		//musica = load_wav("Quantum.wav");
+		
 	}
 	else if(nfondo==3)
 	{
 		fondo = load_bitmap("fondoV.bmp",NULL);				//^
+		//musica = load_wav("Pearl Jam - Sirens.wav");
+		
 	}
 	
 	
@@ -761,7 +796,6 @@ void teclado_in(char nombre[20])
 {
 	int p=0;
 	int pos=170;
-	
 	
 	while(true)
 	{
@@ -1049,6 +1083,7 @@ void cargasprites()
 
 int main() 
 {
+		
 		wiringPiSetupGpio () ;
 		pinMode (BUTTON, INPUT) ;
 		pinMode (led1,OUTPUT);
@@ -1057,13 +1092,35 @@ int main()
 	
  
 		init_allegro();
+		set_window_title("M I K R O N O I D");
 		if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) { allegro_message("Error: inicializando sistema de sonido\n%s\n", allegro_error); return 1; }
                 set_volume(70, 70);
-                musica = load_wav("Avicii & Nicky Romero - Nicktim (Original Mix).wav");
+                musica = load_wav("Dark_Oscillators.wav");
                 musica2 = load_wav("Efecto_Electricidad.wav");
+              
 		cargasprites();  
-		play_sample(musica,500,100,1000,1);
-		reinicio:   
+		play_sample(musica,500,100,1000,0);
+		
+		reinicio:  
+		clear_keybuf();	
+		nombre_jugador[0]=' ';
+			nombre_jugador[1]=' ';
+			nombre_jugador[2]=' ';
+			nombre_jugador[3]=' ';
+			nombre_jugador[4]=' ';
+			nombre_jugador[5]=' ';
+			nombre_jugador[6]=' ';
+			nombre_jugador[7]=' ';
+			nombre_jugador[8]=' ';
+			nombre_jugador[9]=' ';
+			nombre_jugador[10]=' ';
+			nombre_jugador[11]=' ';
+			nombre_jugador[12]=' ';
+			nombre_jugador[13]=' ';
+			nombre_jugador[14]=' ';
+			nombre_jugador[15]=' ';
+			nombre_jugador[16]=' ';
+			nombre_jugador[17]=' ';
 		draw_sprite(screen,fondo,0,0);
 		cargarmatriz(bloquesdefecto,matrizbloques);
 		screen_inicio();
@@ -1074,18 +1131,38 @@ int main()
      
      while (vidas != 0 && victoria==0)				//Juego (Contiene el juego principal y el ciclo de vidas)
      {
-		 reiniciodevariables();						//Reinicia las variables de control y posiciones al inicio de cada vida
+		 reiniciodevariables();	
+		 blit(svidaBMP,svida,(-2+62)*Avidas,0,0,0,62,25);
+		 draw_sprite(buffer,svida,106,610);
+		 iniciojuego(); 					//Reinicia las variables de control y posiciones al inicio de cada vida
 		 
 		 while (!key[KEY_X])	//////////////////////////////////////////////////////////////////////Pausa entre vidas
 		 {
+			 if(key[KEY_F])
+	{
+		if(nfondo!=3)
+		{
+			nfondo++; 
+			usleep(100000);
+		
+		}
+		else 
+		{
+			usleep(100000);
+			nfondo=0;
+		}
+		iniciojuego();
+		
+	}
+			 if (key[KEY_LEFT] || key[KEY_RIGHT]){
 			 iniciojuego(); 
-			 usleep(100000);						//Funcion que controla el movimiento antes de que inicie la partida
+			 usleep(10000);						//Funcion que controla el movimiento antes de que inicie la partida
 			  if (digitalRead (BUTTON) == HIGH)	// Swap LED states
 				{ 	vidas=3;
 					goto reinicio;
 					
 				}
-				
+			}
 				
 		 }
 		 
@@ -1161,12 +1238,13 @@ int main()
 			
 			if(key[KEY_R])
 			{
-				cargarmatriz(matrizbloquesombrilla,matrizbloques);
+				cargarmatriz(bloquesalien,matrizbloques);
 				vidas=3;
 				victoria =0;			
 			}
 			else if(key[KEY_S])
 			{
+				victoria =0;
 				break;
 				
 				
@@ -1192,7 +1270,6 @@ int main()
 			textout_ex(buffer,font, "Processor Model:   BCM2709 ", 250, 215, makecol(0,255,0), -1);
 			textout_ex(buffer,font, "Linux version:  4.4.11-v7+ ", 250 ,230, makecol(0,255,0), -1);
 			textout_ex(buffer,font, "gcc version:         4.9.3 ", 250 ,245, makecol(0,255,0), -1);
-			
 			textout_ex(buffer,font, "Presione R para Reiniciar Juego", 0,400, makecol(255,255,255), -1);
 			textout_ex(buffer,font, "Presione S para Salir del Juego", 0 ,415, makecol(255,255,0), -1);
 			
@@ -1205,6 +1282,7 @@ int main()
 			{
 				cargarmatriz(matrizbloquesombrilla,matrizbloques);
 				vidas=3;
+				victoria =0;
 										
 			}
 			else if(key[KEY_S])
