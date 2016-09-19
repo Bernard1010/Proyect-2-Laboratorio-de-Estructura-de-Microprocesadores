@@ -1183,15 +1183,15 @@ int main()
 			usleep(100000);
 			draw_sprite(buffer,fondo,0,0); 		//Se dibuja la imagen de fondo en el buffer
 			draw_sprite(buffer,gameover,0,100); 		//Se dibuja la imagen de fondo en el buffer
-			textout_ex(buffer,font, "Bernardo Rodriguez 201315419  ", 0, 200, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 0, 215, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Bernardo Rodriguez 201315419  ", 0, 230, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 0, 245, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Bernardo Rodriguez 201315419 ", 0, 200, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Felipe Herrero     201218785 ", 0, 215, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Sergio Gonzalez    201218363 ", 0, 230, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Alejandro Murillo  200016618 ", 0, 245, makecol(0,255,0), -1);
 			
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 250, 200, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 250, 215, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 250 ,230, makecol(0,255,0), -1);
-			textout_ex(buffer,font, "Felipe AFAFAFAF 231151531 ", 250 ,245, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "ARMv7 Processor rev 4 (v7l)", 250, 200, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Processor Model:   BCM2709 ", 250, 215, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "Linux version:  4.4.11-v7+ ", 250 ,230, makecol(0,255,0), -1);
+			textout_ex(buffer,font, "gcc version:         4.9.3 ", 250 ,245, makecol(0,255,0), -1);
 			
 			textout_ex(buffer,font, "Presione R para Reiniciar Juego", 0,400, makecol(255,255,255), -1);
 			textout_ex(buffer,font, "Presione S para Salir del Juego", 0 ,415, makecol(255,255,0), -1);
